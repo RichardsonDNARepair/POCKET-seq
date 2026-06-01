@@ -20,15 +20,6 @@ All input files should be placed in `data/`.
 | `Kuscu2014.xlsx` | HA-dCas9 ChIP-seq off-target data for HEK293 sgRNA4 | Kuscu C, Arslan S, Singh R, Thorpe J, Adli M. Genome-wide analysis reveals characteristics of off-target sites bound by the Cas9 endonuclease. Nat Biotechnol. 2014;32:677–83. https://doi.org/10.1038/nbt.2916 |
 | `*_CRISPORofftargets_hg19.xls` | In silico off-target predictions | Generated via CRISPOR: Concordet JP, Haeussler M. CRISPOR: intuitive guide selection for CRISPR/Cas9 genome editing experiments and screens. Nucleic Acids Res. 2018;46:W242–5. https://doi.org/10.1093/nar/gky354 |
 
-## Usage
-
-```bash
-cd analysis
-python figure2_upset_plots.py
-```
-
-Output is saved to `results/`.
-
 ## Parameters
 
 | Parameter | Value | Description |
