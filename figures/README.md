@@ -1,4 +1,4 @@
-# Figure 2 — Off-target method comparison
+# Figure 2: Off-target method comparison
 
 This folder contains the script used to generate the upset plots and comparison tables in Figure 2 of: (insert citation)
 
