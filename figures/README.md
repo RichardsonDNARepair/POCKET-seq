@@ -1,6 +1,6 @@
 # Figure 2: Off-target method comparison
 
-This folder contains the script used to generate the upset plots and comparison tables in Figure 2 of: (insert citation)
+This folder contains the script used to generate the upset plots and comparison tables in Figure 2 of: Joyce CM, Kramer GD, Vu JT, Tavasoli KU, Gardner BM, Richardson CD. POCKET-seq enables genome-wide profiling of on- and off-target transcriptional regulation events by dCas9-KRAB during CRISPR interference experiments. *bioRxiv.* 2026. https://doi.org/10.64898/2026.06.01.729390
 
 ## Dependencies
 
