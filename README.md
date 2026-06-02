@@ -4,7 +4,7 @@ MOTREC (Mapping Off-Targets in Transcription Regulation Experiments with Callpea
 
 ## Citation
 
-If you use MOTREC in your research, please cite:
+If you use POCKET-seq in your research, please cite:
 
 Joyce CM, Kramer GD, Vu JT, Tavasoli KU, Gardner BM, Richardson CD. POCKET-seq enables genome-wide profiling of on- and off-target transcriptional regulation events by dCas9-KRAB during CRISPR interference experiments. *bioRxiv.* 2026. https://doi.org/10.64898/2026.06.01.729390
 
