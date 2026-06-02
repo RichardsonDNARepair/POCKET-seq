@@ -2,6 +2,12 @@
 
 MOTREC (Mapping Off-Targets in Transcription Regulation Experiments with Callpeak Analysis) is a Python command-line tool for annotating ChIP-seq peak calls from POCKET-seq experiments with their nearest genomic features, phenotype scores, and Gene Ontology terms. It was developed to identify on- and off-target binding events in CRISPR transcriptional regulation experiments (CRISPRi).
 
+## Citation
+
+If you use MOTREC in your research, please cite:
+
+Joyce CM, Kramer GD, Vu JT, Tavasoli KU, Gardner BM, Richardson CD. POCKET-seq enables genome-wide profiling of on- and off-target transcriptional regulation events by dCas9-KRAB during CRISPR interference experiments. *bioRxiv.* 2026. https://doi.org/10.64898/2026.06.01.729390
+
 ## How It Works
 
 MOTREC takes MACS3 peak calls and a genome annotation (GFF3) as input. For each peak, it:
