@@ -1,0 +1,28 @@
+{
+  "intercept": -0.5572122863722186,
+  "coefficients": {
+    "E12": 0.11826702503433728,
+    "GC250": 4.43893043459728,
+    "E12_hinge6": 0.5115094904781264,
+    "post1_G": -0.5082428885808704
+  },
+  "ridge_alpha": 10,
+  "model_id": "no-tss-four-v1",
+  "assembly": "hg19",
+  "eligibility": "NGG and at most one ungapped mismatch at p1-p8",
+  "training_outcome": "log2 predicted replicate geometric-mean off-target ChIP height (nCPM)",
+  "training_guides": [
+    "SOCS3g1",
+    "SOCS3g4",
+    "VEGFA2",
+    "HEK293Ts4",
+    "EMX1"
+  ],
+  "n_training_loci": 1754,
+  "feature_definitions": {
+    "E12": "PAM-proximal p1-p12 score from E12_primary/score_sites.py and algorithm_parameters.tsv",
+    "GC250": "Fraction G+C among callable bases in the two 250-bp flanks excluding the central 23-mer",
+    "E12_hinge6": "max(E12 - 6, 0)",
+    "post1_G": "1 for G on the guide-like strand immediately after NGG, otherwise 0"
+  }
+}

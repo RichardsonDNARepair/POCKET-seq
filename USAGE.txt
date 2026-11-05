@@ -1,0 +1,212 @@
+POCKET-seq | promoter binding and guide sequence scoring
+=======================================================
+
+Extract the whole package and run the commands below from its directory. Use a new
+output directory for each run. Inputs can be local and results are tab-delimited.
+
+Quick start
+-----------
+
+The MACS3 peak workflow uses the Python standard library. For the genome scan,
+install the two additional Python packages in an environment of your choice:
+
+    python3 -m pip install -r requirements.txt
+
+1. Rank observed promoter binding for one guide. This example runs as supplied.
+
+    python3 pocketseq.py peaks --assembly hg19 --guide SOCS3g1 --replicates examples/SOCS3g1_rep1.narrowPeak examples/SOCS3g1_rep2.narrowPeak --pooled examples/SOCS3g1_pooled.narrowPeak --target chr17 76356103 76356126 --out peaks_result
+
+2. Score a list of guides. Supply the FASTA for the assembly you chose. Index it once
+   if the .fai is missing, then run the scan:
+
+    python3 -c 'import pysam; pysam.faidx("/path/to/hg19.fa")'
+    python3 pocketseq.py guides --assembly hg19 --fasta /path/to/hg19.fa --guides examples/guides.tsv --out guide_result
+
+For just the annotated guide list, add --emit-sites none. Add --emit-sites all to
+retain coordinates and scores for every genomic candidate. Genome-wide and promoter
+summaries are calculated in all three modes. Ordinary guide inputs default to
+promoter detail. Original Weissman v2 Top5 input defaults to summary only.
+For help use python3 pocketseq.py peaks --help or python3 pocketseq.py guides --help.
+
+Observed ChIP binding
+---------------------
+
+Supply two or more independently called biological replicates for one guide. Inputs
+are MACS3 narrowPeak (10 fields with valid summits) or MACS3 tab-delimited peaks.xls,
+optionally gzip-compressed. Use calls from the same assembly, with the same peak-calling
+and background-control procedure. Perform blacklist and read QC before supplying files.
+A single pooled peak file lacks the replicate information required by this command.
+
+Calls with MACS3 q <= 0.05 pass by default. Overlapping intervals form a locus. A
+locus must contain at least one base covered by every replicate. The retained set of
+replicate calls has the largest geometric mean fold enrichment among such combinations.
+Optional pooled calls can extend locus bounds. The highest-enrichment constituent
+call overlapping the common core supplies the summit. The output includes the full
+locus bounds, common core, representative summit, and individual peak names.
+
+Only loci with a summit within 1,000 bp (inclusive) of an annotated TSS enter the
+tables. Rank descends by geometric mean signal across replicates within a guide.
+Ties are ordered by chromosome and start. Each linked gene/TSS gets its own row
+and retains the same locus rank. Signed distances are positive downstream of the
+TSS in the gene's direction of transcription.
+
+With only peak calls the signal is MACS3 fold enrichment. To reproduce the
+manuscript's normalized fragment signal, append both arguments to the peaks command:
+
+    --fragments rep1.fragments.bed.gz rep2.fragments.bed.gz --effective-sizes 12747059.4093 10444511.3234
+
+Those example effective sizes apply only to the supplied SOCS3g1 experiment.
+For your own data, use your own effective library sizes, in the same order as
+--replicates. The manuscript used retained fragments times the library's TMM
+factor. Each BED must contain exactly three columns (chrom, start0, end0), one
+record per retained fragment. A fragment contributes once to every 501-bp window
+it overlaps, centered on the locus summit. Signal per replicate is fragment count
+times 1,000,000 divided by its effective library size. A zero gives a zero geometric
+mean. There is no minimum fold enrichment or nCPM threshold beyond the MACS3 calls.
+
+promoter_peaks.tsv contains the ranked candidates, individual signals and units,
+genes and pathway terms. With --target CHROM START0 END0, a locus overlapping the
+intended interval is separated into intended_promoters.tsv if it qualifies as a
+promoter peak. Without a target, all qualifying loci remain and are marked unknown.
+GO terms describe each linked gene and do not affect the rank. A blank term field
+means no exact lookup match. Neither output establishes transcriptional repression.
+
+Guide sequence scoring
+----------------------
+
+Supply a headered TSV with guide_sequence and, optionally, a unique guide ID in
+the guide column. Extra input columns are retained. A plain one-spacer-per-line
+text file also works. Use a 19- or 20-nt spacer, 5' to 3', in guide orientation,
+without the PAM or a cloning extension. U and T are equivalent. For 19-nt guides,
+the spacer is PAM-aligned and the reference extraction uses the same 20+3 window.
+Repeated sequences with distinct guide IDs retain separate outputs and target assignments.
+
+Original Weissman CRISPRi v2 Top5 file (human)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Pass the original headerless ten-column .txt file directly:
+
+    python3 pocketseq.py guides --assembly hg19 --fasta /path/to/hg19.fa --guides 20150624_CRISPRiv2_final.Top5.txt --out Top5_results
+
+The original ten fields are preserved in order. The guide name comes from column 1,
+the activity score from column 8, and the 5'-to-3' spacer from column 9. Every row is
+checked against the cloning arms and spacer in column 7. Case is preserved in the
+export and normalized for sequence comparisons. The library uses an initial G and
+19 targeting bases. The seed is the rightmost eight bases of column 9, and the
+extension is the preceding four bases. The sign in the library name is used only
+to resolve the intended interval; it never reverses the input spacer.
+
+On hg19 the command verifies the coordinate encoded in each targeting name against
+the 19 targeting bases and an adjacent NGG, allowing the library's initial G to
+differ from the genomic base. A minus sign in the name gives a plus-strand start0 of
+coordinate minus 22; a plus sign gives a minus-strand start0 of coordinate. The search
+checks chromosomes assigned to the named gene in the supplied TSS table first, then
+other selected chromosomes if necessary. Only a uniquely verified intended site in
+that search tier is subtracted. Controls have no intended site to subtract. Inspect
+intended_mapping for each row. Other assemblies are scanned, with intended positions
+unresolved because the source coordinates refer to hg19. genome_perfect_matches still
+counts literal matches to all 20 supplied bases.
+
+For large summary-only runs (at least 1,000 distinct spacers), the program groups
+genomic sites by their PAM-proximal 12-mer, accumulates the flanking contributions
+and computes the exact sums and maxima across the two seed branches. Allocate a few
+GB of RAM. Explicit --emit-sites promoter or all requests individual alignments
+and can generate very large files for this library.
+
+Both genomic strands are searched for NGG. With p1 immediately beside the PAM, a
+site qualifies if p1-p8 match exactly, OR exactly one of p1-p8 differs and all of
+p9-p12 match. Matching is ungapped. The two branches use the same frozen score:
+
+    eta = -0.5572122864 + 0.1182670250 * E12
+          + 4.4389304346 * GC250 + 0.5115094905 * max(E12 - 6, 0)
+          - 0.5082428886 * post1_G
+
+E12 is the manuscript's nearest-neighbor score over p1-p12. energy.py implements
+the calculation with data/algorithm_parameters.tsv. GC250 is the fraction of G+C
+among A/C/G/T bases in the two 250-bp flanks, excluding the central 23-mer.
+post1_G is one when the next base after NGG on the guide-like strand is G. The
+full-precision coefficients and training metadata are in data/frozen_model.json.
+Higher eta predicts stronger ChIP binding on the training model's log2 nCPM scale.
+The model was fitted in HCT116. Applying it to a different genome or cell type is
+an extrapolation. RNA, pathways and TSS distance do not enter the score.
+
+Promoter membership is applied after scoring. The midpoint of p1-p8 must be within
+1,000 bp of a TSS. For a BED interval starting at s, this midpoint is s+15.5 on
+the plus strand and s+6.5 on the minus strand, in zero-based base coordinates.
+The central 23-mer must contain only A/C/G/T. Chromosome ends truncate flanks.
+An unavailable post-PAM base gives a zero G indicator. If there are no callable
+flanking bases the site is counted, the score is NA and it is omitted from means
+and sums. All branch-passing sites are included without a top-percentile cutoff.
+
+guide_summary.tsv adds these fields to each input guide:
+  seed_8nt                 Guide seed, p8 through p1, written 5' to 3'.
+  extension_p9_p12         Required extension for the mismatch branch, p12 through p9.
+  promoter_sites           Distinct guide/start/strand sites near at least one TSS.
+  promoter_scored_sites    Sites contributing a valid eta to the summaries.
+  promoter_mean_eta        Arithmetic mean over those scored promoter sites.
+  promoter_sum_eta         Arithmetic sum over those scored promoter sites.
+  promoter_max_eta         Highest promoter eta for the guide.
+  genome_*                 The corresponding metrics over all selected contigs.
+
+A site near multiple genes counts once per guide. Its linked gene IDs and names
+appear in matching order in sites.tsv.gz. Sites with identical sequences at distinct
+coordinates count separately. An empty set has sum zero, mean NA and maximum NA.
+Sum eta is a descriptive, count-dependent statistic on a log scale. Compare site
+counts and maximum eta alongside it when reviewing guides.
+
+To exclude the intended target from the summary, supply target_chrom, target_start0
+and target_end0 for the full 23-bp genomic interval. These inputs use zero-based
+half-open BED coordinates. Convert a one-based inclusive interval by subtracting
+one from its start and leaving its end unchanged. The script validates the intended
+sequence and strand against the FASTA. It retains other perfect genomic matches.
+If the intended coordinates are unknown, all candidates are counted and target_status
+is unknown. genome_perfect_matches includes the intended site when supplied. Detail
+rows for intended sites are labeled and retained within the requested emission scope.
+
+Using another genome or pathway collection
+------------------------------------------
+
+For hg19, the package includes 18,789 representative human TSSs from the manuscript's
+RefSeq Select table (NCBI GRCh37.p13, release 105.20220307, with manuscript gene IDs).
+The default contigs are chr1 through chr22, chrX and chrY. hg19 FASTA chromosome
+lengths are checked. Raw peak coordinates alone cannot establish their assembly.
+
+For other assemblies, supply --assembly BUILD --tss your_TSS.tsv. The guides command
+also needs the corresponding indexed FASTA. Use one row per representative TSS with
+these tab-separated headers (refseq_transcript is optional):
+
+    chrom    TSS0    strand    gene_id    gene_name    refseq_transcript
+
+TSS0 is a zero-based base coordinate. From a one-based inclusive transcript record it
+equals start-1 on the plus strand and end-1 on the minus strand. Prefer one selected
+transcript per gene to reproduce the manuscript convention. Use identical contig names
+for peaks, FASTA and annotation. Other assemblies default to all FASTA contigs;
+--contigs primary.txt restricts a scan to one listed contig per line.
+
+For peaks outside hg19, supply --pathways with the corresponding gene-to-term TSV.
+This option can also override the bundled human annotation. Supply gene_id or gene_name,
+term_id, and optionally term_name. IDs must match the TSS annotation, including
+version suffixes when present. GO or curated pathway sets such as Reactome can be used.
+Bundled human GO Biological Process annotations are derived from the Gene Ontology
+Consortium's human GAF dated 2023-04-02 and the GO Basic ontology release 2023-04-01.
+There are 134,991 distinct positive gene-symbol/term pairs. prepare_go.py accepts a GAF,
+matching OBO ontology and NCBI taxonomy ID to rebuild or update the lookup:
+
+    python3 prepare_go.py --gaf goa_human.gaf.gz --obo go-basic.obo --taxon 9606 --out human_GO_BP_updated.tsv.gz
+
+Data credits: NCBI RefSeq (https://www.ncbi.nlm.nih.gov/refseq/);
+Gene Ontology Consortium and contributing annotators (https://geneontology.org/).
+
+Verification
+------------
+
+Each run writes run.json with its parameters and counts. Finished examples are in
+examples/results. In a whole-hg19 scan, the five example guides reproduced all
+190,115 off-target candidates in the manuscript's branch_candidates.hg19.tsv.gz
+on guide, chromosome, position and strand. E12 matched exactly and the maximum
+absolute eta difference was below 6e-13. Of these, 3,642 passed the promoter window.
+The SOCS3g1 fragment-mode example reproduced all 46 archived promoter-associated
+locus intervals and summits (one intended). Each normalized height agreed to 1e-8 nCPM.
+
+Run the synthetic regression checks with:
+
+    python3 -m unittest discover -s tests -v

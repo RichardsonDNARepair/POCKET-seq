@@ -1,0 +1,40 @@
+model	term	value	definition
+NN37_table	DNA_DNA_AA	-1.01467	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_AC	-1.45264	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_AG	-1.28685	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_AT	-0.87294	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_CA	-1.459595	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_CC	-1.828015	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_CG	-2.16392	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_CT	-1.28685	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_GA	-1.31467	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_GC	-2.23234	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_GG	-1.828015	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_GT	-1.45264	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_TA	-0.593805	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_TC	-1.31467	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_TG	-1.459595	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	DNA_DNA_TT	-1.01467	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_AA	-1.007715	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_AC	-2.085155	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_AG	-1.811475	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_AT	-0.887415	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_CA	-0.905085	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_CC	-2.10452	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_CG	-1.691935	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_CT	-0.890045	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_GA	-1.312975	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_GC	-2.696435	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_GG	-2.906215	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_GT	-1.10076	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_TA	-0.60452	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_TC	-1.497565	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_TG	-1.59174	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+NN37_table	RNA_DNA_TT	-0.21054	dG37 kcal/mol table; indexed in guide-like 5-to-3 orientation; approximate proxy only
+E12	horizon	12	PAM-proximal p1 through p12
+E12	p1_mismatch_cost	2	Assumed initiation cost
+E12	step_offset	-0.5	Added to each step p2-p12
+E12	mismatched_stack_hybrid_fraction	0	No favorable hybrid stacking if either position mismatches
+E12	score_resolution	0.01	Symmetric half-away-from-zero; higher score favorable
+E12	seed_length	8	p1 nearest PAM
+E12	max_seed_mismatches	1	NGG; ungapped
